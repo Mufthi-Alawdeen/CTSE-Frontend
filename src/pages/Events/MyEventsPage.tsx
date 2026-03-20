@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import type { Event } from '../../types';
 import { useAuth } from '../../context/AuthContext';
-import { Calendar, MapPin, Users, Ticket, Loader2, Search, PlusCircle, ArrowRight } from 'lucide-react';
+import { Calendar, MapPin, Users, Ticket, Loader2, PlusCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function MyEventsPage() {
