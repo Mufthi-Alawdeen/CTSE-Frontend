@@ -1,73 +1,58 @@
-# React + TypeScript + Vite
+# CTSE TicketGo - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React frontend for the CTSE Event Management System. Built with **Vite**, **React**, and **TypeScript**.
 
-Currently, two official plugins are available:
+## Architecture Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This frontend application communicates with three separate microservices on the backend, which are all routed through a single **AWS Application Load Balancer (ALB)**.
 
-## React Compiler
+- **Frontend Application** — Interacts with users.
+- **ALB (`ticket-go-alb`)** — Acts as a unified API Gateway.
+- **Backend Microservices** (Auth, Event, Booking) — Handle core business logic via isolated ECS containers.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Configure Environment
 
-## Expanding the ESLint configuration
+To run this application locally against the deployed AWS infrastructure, create a `.env` file in the root directory:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_API_BASE_URL=http://ticket-go-alb-823936217.ap-southeast-1.elb.amazonaws.com/api
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This single ALB URL correctly routes traffic based on the path (e.g., `/api/auth/*`, `/api/events/*`, `/api/bookings/*`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Getting Started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+- Node.js 20+
+- npm or yarn
+
+### Installation & Run
+
+```bash
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+
+# Build for production
+npm run build
 ```
+
+## API Documentation (Swagger UI)
+
+You can explore and test the backend APIs interactively via Swagger UI using the AWS ALB links below:
+
+- **🔐 Auth API:** [`http://ticket-go-alb.elb.amazonaws.com/api/auth/docs`](http://ticket-go-alb-823936217.ap-southeast-1.elb.amazonaws.com/api/auth/docs)
+- **📅 Event API:** [`http://ticket-go-alb.elb.amazonaws.com/api/events/docs`](http://ticket-go-alb-823936217.ap-southeast-1.elb.amazonaws.com/api/events/docs)
+- **🎫 Booking API:** [`http://ticket-go-alb.elb.amazonaws.com/api/bookings/docs`](http://ticket-go-alb-823936217.ap-southeast-1.elb.amazonaws.com/api/bookings/docs)
+
+ *(Note: Health check endpoints for target groups are located at the `/health` paths on the raw containers and route automatically.)*
+
+## Tech Stack
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Language**: TypeScript
+- **Styling**: Vanilla CSS
+- **Routing**: React Router (if applicable)
+- **Data Fetching**: Axios / Native Fetch
