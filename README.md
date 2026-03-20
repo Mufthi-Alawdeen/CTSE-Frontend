@@ -15,7 +15,7 @@ This frontend application communicates with three separate microservices on the 
 To run this application locally against the deployed AWS infrastructure, create a `.env` file in the root directory:
 
 ```env
-VITE_API_BASE_URL=http://ticket-go-alb-823936217.ap-southeast-1.elb.amazonaws.com/api
+VITE_API_BASE_URL=http://ticket-go-alb-823936217.ap-southeast-1.elb.amazonaws.com
 ```
 
 This single ALB URL correctly routes traffic based on the path (e.g., `/api/auth/*`, `/api/events/*`, `/api/bookings/*`).
