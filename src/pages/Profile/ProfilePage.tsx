@@ -46,7 +46,7 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-4xl mx-auto px-6 pt-32 pb-12">
       <div className="flex items-center gap-4 mb-8">
         <div className="w-16 h-16 rounded-full bg-trip-teal/10 flex items-center justify-center">
           <User className="w-8 h-8 text-trip-teal" />
