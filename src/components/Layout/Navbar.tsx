@@ -2,15 +2,27 @@ import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Ticket, LogOut, User as UserIcon, Menu, X } from "lucide-react";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Sign out?",
+      text: "You will need to sign in again to continue.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, sign out",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return false;
     logout();
     navigate("/");
+    return true;
   };
 
   return (
@@ -126,9 +138,9 @@ export default function Navbar() {
           <div className="pt-3 border-t border-trip-border mt-3">
             {user ? (
               <button
-                onClick={() => {
-                  handleLogout();
-                  setMobileOpen(false);
+                  onClick={async () => {
+                    const didLogout = await handleLogout();
+                    if (didLogout) setMobileOpen(false);
                 }}
                 className="w-full text-left px-4 py-3 text-red-500 text-sm font-bold"
               >

@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import type { Booking } from '../../types';
 import { Ticket, Calendar, MapPin, Trash2, Loader2, ArrowRight, CheckCircle2, TicketX } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -27,13 +28,26 @@ export default function BookingsPage() {
   };
 
   const handleCancel = async (bookingId: string) => {
-    if (!window.confirm('Are you sure you want to cancel this booking?')) return;
+    const result = await Swal.fire({
+      title: 'Cancel booking?',
+      text: 'Are you sure you want to cancel this booking?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it',
+      cancelButtonText: 'No',
+    });
+    if (!result.isConfirmed) return;
     setCancellingId(bookingId);
     try {
       await api.delete(`/api/bookings/${bookingId}`);
       setBookings(prev => prev.map(b => b._id === bookingId ? { ...b, status: 'cancelled' } : b));
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to cancel booking');
+      await Swal.fire({
+        title: 'Failed to cancel booking',
+        text: error.response?.data?.error || 'Failed to cancel booking',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
     } finally {
       setCancellingId(null);
     }

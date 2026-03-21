@@ -4,6 +4,7 @@ import api from '../../services/api';
 import type { Event } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { Calendar, MapPin, Users, Ticket, Loader2, Search, Minus, Plus, X } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -47,10 +48,20 @@ export default function EventsPage() {
         eventId: bookingModal._id,
         ticketCount,
       });
-      alert(`🎉 Successfully booked ${ticketCount} ticket${ticketCount > 1 ? 's' : ''}! Check "My Bookings" to see your reservation.`);
+      await Swal.fire({
+        title: 'Booked successfully',
+        text: `You booked ${ticketCount} ticket${ticketCount > 1 ? 's' : ''}. Check "My Bookings" to view your reservation.`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
       setBookingModal(null);
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Booking failed');
+      await Swal.fire({
+        title: 'Booking failed',
+        text: error.response?.data?.error || 'Booking failed',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
     } finally {
       setBookingId(null);
     }

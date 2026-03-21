@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
 import { Calendar, MapPin, AlignLeft, Users, Type, Loader2, Plus, ArrowLeft } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 export default function CreateEventPage() {
   const [formData, setFormData] = useState({
@@ -24,7 +25,12 @@ export default function CreateEventPage() {
       });
       navigate('/events/mine');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to create event');
+      await Swal.fire({
+        title: 'Failed to create event',
+        text: error.response?.data?.error || 'Failed to create event',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
       setLoading(false);
     }
   };
