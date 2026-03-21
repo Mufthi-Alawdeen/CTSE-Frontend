@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import type { Event } from '../../types';
 import { useAuth } from '../../context/AuthContext';
-import { Calendar, MapPin, Users, Ticket, Loader2, PlusCircle } from 'lucide-react';
+import { Calendar, MapPin, Users, Ticket, Loader2, PlusCircle, Pencil, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function MyEventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -22,6 +24,41 @@ export default function MyEventsPage() {
       console.error('Failed to fetch events', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (event: Event) => {
+    const result = await Swal.fire({
+      title: 'Delete this event?',
+      text: `"${event.title}" will be removed permanently.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc2626',
+    });
+    if (!result.isConfirmed) return;
+
+    setDeletingId(event._id);
+    try {
+      await api.delete(`/api/events/${event._id}`);
+      setEvents((prev) => prev.filter((e) => e._id !== event._id));
+      await Swal.fire({
+        title: 'Deleted',
+        text: 'The event was removed.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } };
+      await Swal.fire({
+        title: 'Could not delete',
+        text: err.response?.data?.error || 'Failed to delete event',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -68,24 +105,46 @@ export default function MyEventsPage() {
                 <h3 className="font-bold text-trip-text mb-3 line-clamp-1 text-xl" title={event.title}>{event.title}</h3>
                 
                 <div className="space-y-3 mb-6 flex-1">
-                  <p className="text-sm font-medium text-trip-text-muted flex items-center gap-3">
+                  <div className="text-sm font-medium text-trip-text-muted flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-trip-bg flex items-center justify-center shrink-0">
                       <MapPin className="w-4 h-4 text-trip-teal" />
                     </div>
                     <span className="truncate">{event.location}</span>
-                  </p>
-                  <p className="text-sm font-medium text-trip-text-muted flex items-center gap-3">
+                  </div>
+                  <div className="text-sm font-medium text-trip-text-muted flex items-center gap-3">
                      <div className="w-8 h-8 rounded-full bg-trip-bg flex items-center justify-center shrink-0">
                       <Calendar className="w-4 h-4 text-trip-teal" />
                      </div>
                      {new Date(event.date).toLocaleTimeString(undefined, {timeStyle: 'short'})}
-                  </p>
-                   <p className="text-sm font-medium text-trip-text-muted flex items-center gap-3">
+                  </div>
+                   <div className="text-sm font-medium text-trip-text-muted flex items-center gap-3">
                      <div className="w-8 h-8 rounded-full bg-trip-bg flex items-center justify-center shrink-0">
                       <Users className="w-4 h-4 text-trip-teal" />
                      </div>
                      {event.maxAttendees} capacity
-                  </p>
+                  </div>
+                </div>
+                <div className="mt-auto flex flex-col sm:flex-row gap-2">
+                  <Link
+                    to={`/events/${event._id}/edit`}
+                    className="inline-flex flex-1 items-center justify-center gap-2 py-2.5 rounded-full bg-trip-teal/10 text-trip-teal font-bold text-sm hover:bg-trip-teal hover:text-white transition-colors"
+                  >
+                    <Pencil className="w-4 h-4" />
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    disabled={deletingId === event._id}
+                    onClick={() => handleDelete(event)}
+                    className="inline-flex flex-1 items-center justify-center gap-2 py-2.5 rounded-full border border-red-200 bg-red-50 text-red-600 font-bold text-sm hover:bg-red-100 transition-colors disabled:opacity-50"
+                  >
+                    {deletingId === event._id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>

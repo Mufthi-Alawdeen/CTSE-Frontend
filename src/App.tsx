@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import EventsPage from './pages/Events/EventsPage';
 import CreateEventPage from './pages/Events/CreateEventPage';
 import MyEventsPage from './pages/Events/MyEventsPage';
+import EditEventPage from './pages/Events/EditEventPage';
 import BookingsPage from './pages/Booking/BookingsPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import { useAuth } from './context/AuthContext';
@@ -33,6 +34,7 @@ export default function App() {
         {/* Protected routes */}
         <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/login" />} />
         <Route path="/events/create" element={user ? <CreateEventPage /> : <Navigate to="/login" />} />
+        <Route path="/events/:id/edit" element={user ? <EditEventPage /> : <Navigate to="/login" />} />
         <Route path="/events/mine" element={user ? <MyEventsPage /> : <Navigate to="/login" />} />
         <Route path="/bookings" element={user ? <BookingsPage /> : <Navigate to="/login" />} />
       </Routes>
