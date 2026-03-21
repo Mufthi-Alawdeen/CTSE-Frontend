@@ -1,11 +1,11 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Ticket, ArrowRight, Loader2, User, Mail, Lock, ShieldCheck } from 'lucide-react';
+import { Ticket, ArrowRight, Loader2, User, Mail, Lock, ShieldCheck, Phone } from 'lucide-react';
 import api from '../../services/api';
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '', role: 'user' });
+  const [formData, setFormData] = useState({ username: '', email: '', phoneNumber: '', password: '', role: 'user' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -107,6 +107,22 @@ export default function SignupPage() {
                       placeholder="john@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-trip-text mb-2">Phone Number</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Phone className="h-5 w-5 text-trip-text-muted/70" />
+                    </div>
+                    <input
+                      type="tel"
+                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-trip-bg border border-trip-border text-trip-text focus:outline-none focus:ring-2 focus:ring-trip-teal/50 focus:border-trip-teal/50 transition-all font-medium"
+                      placeholder="+1 (555) 000-0000"
+                      value={formData.phoneNumber}
+                      onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
                     />
                   </div>
                 </div>

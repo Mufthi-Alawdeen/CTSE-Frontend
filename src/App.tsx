@@ -7,6 +7,7 @@ import EventsPage from './pages/Events/EventsPage';
 import CreateEventPage from './pages/Events/CreateEventPage';
 import MyEventsPage from './pages/Events/MyEventsPage';
 import BookingsPage from './pages/Booking/BookingsPage';
+import ProfilePage from './pages/Profile/ProfilePage';
 import { useAuth } from './context/AuthContext';
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/signup" element={!user ? <SignupPage /> : <Navigate to="/" />} />
 
         {/* Protected routes */}
+        <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/login" />} />
         <Route path="/events/create" element={user ? <CreateEventPage /> : <Navigate to="/login" />} />
         <Route path="/events/mine" element={user ? <MyEventsPage /> : <Navigate to="/login" />} />
         <Route path="/bookings" element={user ? <BookingsPage /> : <Navigate to="/login" />} />

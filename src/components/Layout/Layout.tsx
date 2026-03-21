@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react';
-import { NavLink, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { Ticket, LogOut, User as UserIcon, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import type { ReactNode } from "react";
+import { NavLink, useNavigate, Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { Ticket, LogOut, User as UserIcon, Menu, X } from "lucide-react";
+import { useState } from "react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -11,18 +11,25 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Do not render the Layout shell for Auth pages
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   return (
     <div className="min-h-screen bg-trip-bg flex flex-col">
       {/* Top Navbar */}
-      <header className="absolute top-0 left-0 right-0 z-50 bg-transparent">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <header className="fixed top-6 left-0 right-0 z-50 px-4 sm:px-8 flex justify-center pointer-events-none">
+        <div className="w-full max-w-7xl h-17 px-6  sm:px-8 flex items-center justify-between rounded-[2.5rem] bg-white/30 backdrop-blur-2xl border border-white/50 shadow-[0_8px_32px_rgba(31,56,100,0.08)] pointer-events-auto transition-all duration-300">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-full bg-trip-teal flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -45,10 +52,15 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-3 border-l border-trip-border/30 pl-6">
               {user ? (
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-sm border border-trip-border">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-sm border border-trip-border hover:bg-white transition-all group-hover:shadow-sm"
+                  >
                     <UserIcon className="w-4 h-4 text-trip-teal" />
-                    <span className="text-sm font-bold text-trip-text">{user.username}</span>
-                  </div>
+                    <span className="text-sm font-bold text-trip-text">
+                      {user.username}
+                    </span>
+                  </Link>
                   <button
                     id="logout-btn"
                     onClick={handleLogout}
@@ -59,12 +71,20 @@ export default function Layout({ children }: LayoutProps) {
                   </button>
                 </div>
               ) : (
-                <Link
-                  to="/login"
-                  className="px-6 py-2.5 rounded-full bg-white text-trip-text text-sm font-bold hover:shadow-md transition-all border border-trip-border"
-                >
-                  Log in
-                </Link>
+                <>
+                  <Link
+                    to="/login"
+                    className="px-6 py-2.5 rounded-full bg-white text-trip-text text-sm font-bold hover:shadow-md transition-all border border-trip-border"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="px-6 py-2.5 rounded-full bg-trip-teal text-white text-sm font-bold hover:bg-[#1a9588] transition-colors shadow-sm"
+                  >
+                    Sign Up
+                  </Link>
+                </>
               )}
             </div>
           </div>
@@ -74,26 +94,76 @@ export default function Layout({ children }: LayoutProps) {
             className="md:hidden p-2 text-trip-text bg-white/50 rounded-full"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
           </button>
         </div>
 
         {/* Mobile Dropdown */}
         {mobileOpen && (
-          <div className="md:hidden bg-white shadow-xl px-6 py-4 space-y-2 absolute top-20 left-0 right-0 border-b border-trip-border animate-in slide-in-from-top-2">
-            <MobileNavBtn to="/" label="Home" onClick={() => setMobileOpen(false)} end />
-            <MobileNavBtn to="/events" label="Events" onClick={() => setMobileOpen(false)} />
-            {user && <MobileNavBtn to="/events/mine" label="My Events" onClick={() => setMobileOpen(false)} />}
-            {user && <MobileNavBtn to="/bookings" label="My Bookings" onClick={() => setMobileOpen(false)} />}
+          <div className="md:hidden absolute top-[calc(5rem+1.5rem)] left-4 right-4 bg-white/70 backdrop-blur-2xl shadow-2xl rounded-[2rem] border border-white/60 px-6 py-4 space-y-2 animate-in slide-in-from-top-4 pointer-events-auto">
+            <MobileNavBtn
+              to="/"
+              label="Home"
+              onClick={() => setMobileOpen(false)}
+              end
+            />
+            <MobileNavBtn
+              to="/events"
+              label="Events"
+              onClick={() => setMobileOpen(false)}
+            />
+            {user && (
+              <MobileNavBtn
+                to="/events/mine"
+                label="My Events"
+                onClick={() => setMobileOpen(false)}
+              />
+            )}
+            {user && (
+              <MobileNavBtn
+                to="/bookings"
+                label="My Bookings"
+                onClick={() => setMobileOpen(false)}
+              />
+            )}
+            {user && (
+              <MobileNavBtn
+                to="/profile"
+                label="My Profile"
+                onClick={() => setMobileOpen(false)}
+              />
+            )}
             <div className="pt-3 border-t border-trip-border mt-3">
               {user ? (
-                <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="w-full text-left px-4 py-3 text-red-500 text-sm font-bold">
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMobileOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-3 text-red-500 text-sm font-bold"
+                >
                   Sign Out ({user.username})
                 </button>
               ) : (
                 <div className="flex gap-3 px-4 py-2">
-                  <Link to="/login" onClick={() => setMobileOpen(false)} className="px-6 py-2 rounded-full bg-trip-teal text-white text-sm font-bold w-full text-center">Log In</Link>
-                  <Link to="/signup" onClick={() => setMobileOpen(false)} className="px-6 py-2 rounded-full bg-white border border-trip-border text-trip-text text-sm font-bold w-full text-center">Sign Up</Link>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="px-6 py-2 rounded-full bg-trip-teal text-white text-sm font-bold w-full text-center"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setMobileOpen(false)}
+                    className="px-6 py-2 rounded-full bg-white border border-trip-border text-trip-text text-sm font-bold w-full text-center"
+                  >
+                    Sign Up
+                  </Link>
                 </div>
               )}
             </div>
@@ -102,15 +172,13 @@ export default function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
 
       {/* Footer */}
       <footer className="bg-trip-bg pt-16 pb-8 border-t border-trip-border mt-auto">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between border-b border-trip-border pb-8 mb-8">
           <div className="flex items-center gap-2">
-             <div className="w-8 h-8 rounded-full bg-trip-teal flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-trip-teal flex items-center justify-center">
               <Ticket className="w-4 h-4 text-white" />
             </div>
             <span className="text-xl font-black tracking-tight text-trip-text">
@@ -118,9 +186,21 @@ export default function Layout({ children }: LayoutProps) {
             </span>
           </div>
           <div className="flex gap-6 text-sm font-medium text-trip-text-muted">
-            <Link to="/" className="hover:text-trip-teal transition-colors">Home</Link>
-            <Link to="/events" className="hover:text-trip-teal transition-colors">Events</Link>
-            <Link to="/login" className="hover:text-trip-teal transition-colors">Sign In</Link>
+            <Link to="/" className="hover:text-trip-teal transition-colors">
+              Home
+            </Link>
+            <Link
+              to="/events"
+              className="hover:text-trip-teal transition-colors"
+            >
+              Events
+            </Link>
+            <Link
+              to="/login"
+              className="hover:text-trip-teal transition-colors"
+            >
+              Sign In
+            </Link>
           </div>
         </div>
         <p className="text-center text-xs text-trip-text-muted">
@@ -131,7 +211,15 @@ export default function Layout({ children }: LayoutProps) {
   );
 }
 
-function NavBtn({ to, label, end = false }: { to: string; label: string; end?: boolean }) {
+function NavBtn({
+  to,
+  label,
+  end = false,
+}: {
+  to: string;
+  label: string;
+  end?: boolean;
+}) {
   return (
     <NavLink
       to={to}
@@ -139,8 +227,8 @@ function NavBtn({ to, label, end = false }: { to: string; label: string; end?: b
       className={({ isActive }) =>
         `text-sm font-semibold transition-colors ${
           isActive
-            ? 'text-trip-text'
-            : 'text-trip-text-muted hover:text-trip-teal'
+            ? "text-trip-text"
+            : "text-trip-text-muted hover:text-trip-teal"
         }`
       }
     >
@@ -149,7 +237,17 @@ function NavBtn({ to, label, end = false }: { to: string; label: string; end?: b
   );
 }
 
-function MobileNavBtn({ to, label, onClick, end = false }: { to: string; label: string; onClick: () => void; end?: boolean }) {
+function MobileNavBtn({
+  to,
+  label,
+  onClick,
+  end = false,
+}: {
+  to: string;
+  label: string;
+  onClick: () => void;
+  end?: boolean;
+}) {
   return (
     <NavLink
       to={to}
@@ -158,8 +256,8 @@ function MobileNavBtn({ to, label, onClick, end = false }: { to: string; label: 
       className={({ isActive }) =>
         `block px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
           isActive
-            ? 'bg-trip-bg text-trip-text'
-            : 'text-trip-text-muted hover:text-trip-teal hover:bg-trip-bg/50'
+            ? "bg-trip-bg text-trip-text"
+            : "text-trip-text-muted hover:text-trip-teal hover:bg-trip-bg/50"
         }`
       }
     >

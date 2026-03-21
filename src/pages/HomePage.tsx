@@ -35,7 +35,7 @@ export default function HomePage() {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-white/10 [mask-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAiPjxwYXRoIGQ9Ik0wIDEwYzEwIDAgMjAgMTAgNDAgMTBzMzAtMTAgNDAtMTBTOTAgMjAgMTEwIDIwczMwLTEwIDQwLTEwIDMwIDEwIDUwIDEwdjEwSDB6IiBmaWxsPSIjRkFGQUZBIi8+PC9zdmc+')] bg-repeat-x bg-bottom" style={{backgroundSize: '200px 20px'}} />
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h1 className="text-4xl md:text-6xl font-black text-trip-text tracking-tight mb-4 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-black text-trip-text tracking-tight mb-4 mt-10 leading-tight">
             Your Ultimate Event Destination<br />
             Find, Book & Enjoy!
           </h1>

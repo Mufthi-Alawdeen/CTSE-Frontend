@@ -23,7 +23,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const res = await api.get('/api/auth/validate');
         if (res.data.valid) {
-          setUser({ id: res.data.userId, username: res.data.username });
+          setUser({
+            id: res.data.userId,
+            username: res.data.username,
+            email: res.data.email,
+            phoneNumber: res.data.phoneNumber
+          });
           setToken(storedToken);
         } else {
           clearAuth();
@@ -54,7 +59,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: { Authorization: `Bearer ${newToken}` },
       });
       if (res.data.valid) {
-        setUser({ id: res.data.userId, username: res.data.username });
+        setUser({
+          id: res.data.userId,
+          username: res.data.username,
+          email: res.data.email,
+          phoneNumber: res.data.phoneNumber
+        });
       }
     } catch {
       clearAuth();
